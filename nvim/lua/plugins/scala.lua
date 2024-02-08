@@ -98,6 +98,7 @@ return {
       -- Example of settings
       metals_config.settings = {
         showImplicitArguments = true,
+        showInferredType = true,
         excludedPackages = { "akka.actor.typed.javadsl", "com.github.swagger.akka.javadsl" },
       }
 
@@ -209,6 +210,22 @@ return {
   -- },
   {
     "nvim-lualine/lualine.nvim",
+    -- dependencies = {
+    --   "arkav/lualine-lsp-progress",
+    --   "nvim-lua/lsp-status.nvim",
+    --   {
+    --     "linrongbin16/lsp-progress.nvim",
+    --     config = function()
+    --       require("lsp-progress").setup()
+    --       vim.api.nvim_create_augroup("lualine_augroup", { clear = true })
+    --       vim.api.nvim_create_autocmd("User", {
+    --         group = "lualine_augroup",
+    --         pattern = "LspProgressStatusUpdated",
+    --         callback = require("lualine").refresh,
+    --       })
+    --     end,
+    --   },
+    -- },
     event = "VeryLazy",
     init = function()
       vim.g.lualine_laststatus = vim.o.laststatus
@@ -240,6 +257,7 @@ return {
           lualine_b = { "branch" },
 
           lualine_c = {
+            -- { "diagnostics", sources = { "nvim_lsp" } }
             Util.lualine.root_dir(),
             {
               "diagnostics",
@@ -253,75 +271,80 @@ return {
             { "filetype", icon_only = true, separator = "", padding = { left = 1, right = 0 } },
             { Util.lualine.pretty_path() },
           },
-          lualine_w = {
-            {
-
-              "diagnostics",
-
-              -- Table of diagnostic sources, available sources are:
-              --   'nvim_lsp', 'nvim_diagnostic', 'nvim_workspace_diagnostic', 'coc', 'ale', 'vim_lsp'.
-              -- or a function that returns a table as such:
-              --   { error=error_cnt, warn=warn_cnt, info=info_cnt, hint=hint_cnt }
-              sources = { "nvim_lsp" },
-
-              -- Displays diagnostics for the defined severity types
-              sections = { "error", "warn", "info", "hint" },
-
-              diagnostics_color = {
-                -- Same values as the general color option can be used here.
-                error = "DiagnosticError", -- Changes diagnostics' error color.
-                warn = "DiagnosticWarn", -- Changes diagnostics' warn color.
-                info = "DiagnosticInfo", -- Changes diagnostics' info color.
-                hint = "DiagnosticHint", -- Changes diagnostics' hint color.
-              },
-              symbols = { error = "E", warn = "W", info = "I", hint = "H" },
-              colored = true, -- Displays diagnostics status in color if set to true.
-              update_in_insert = false, -- Update diagnostics in insert mode.
-              always_visible = false, -- Show diagnostics even if there are none.
-            },
-          },
+          -- lualine_w = {
+          --   {
+          --
+          --     "diagnostics",
+          --
+          --     -- Table of diagnostic sources, available sources are:
+          --     --   'nvim_lsp', 'nvim_diagnostic', 'nvim_workspace_diagnostic', 'coc', 'ale', 'vim_lsp'.
+          --     -- or a function that returns a table as such:
+          --     --   { error=error_cnt, warn=warn_cnt, info=info_cnt, hint=hint_cnt }
+          --     sources = { "nvim_lsp" },
+          --
+          --     -- Displays diagnostics for the defined severity types
+          --     sections = { "error", "warn", "info", "hint" },
+          --
+          --     diagnostics_color = {
+          --       -- Same values as the general color option can be used here.
+          --       error = "DiagnosticError", -- Changes diagnostics' error color.
+          --       warn = "DiagnosticWarn", -- Changes diagnostics' warn color.
+          --       info = "DiagnosticInfo", -- Changes diagnostics' info color.
+          --       hint = "DiagnosticHint", -- Changes diagnostics' hint color.
+          --     },
+          --     symbols = { error = "E", warn = "W", info = "I", hint = "H" },
+          --     colored = true, -- Displays diagnostics status in color if set to true.
+          --     update_in_insert = false, -- Update diagnostics in insert mode.
+          --     always_visible = false, -- Show diagnostics even if there are none.
+          --   },
+          -- },
           lualine_x = {
-          -- stylua: ignore
-          {
-            function() return require("noice").api.status.command.get() end,
-            cond = function() return package.loaded["noice"] and require("noice").api.status.command.has() end,
-            color = Util.ui.fg("Statement"),
-          },
-          -- stylua: ignore
-          {
-            function() return require("noice").api.status.mode.get() end,
-            cond = function() return package.loaded["noice"] and require("noice").api.status.mode.has() end,
-            color = Util.ui.fg("Constant"),
-          },
-          -- stylua: ignore
-          {
-            function() return "  " .. require("dap").status() end,
-            cond = function () return package.loaded["dap"] and require("dap").status() ~= "" end,
-            color = Util.ui.fg("Debug"),
-          },
-            {
-              require("lazy.status").updates,
-              cond = require("lazy.status").has_updates,
-              color = Util.ui.fg("Special"),
-            },
-            {
-              "diff",
-              symbols = {
-                added = icons.git.added,
-                modified = icons.git.modified,
-                removed = icons.git.removed,
-              },
-              source = function()
-                local gitsigns = vim.b.gitsigns_status_dict
-                if gitsigns then
-                  return {
-                    added = gitsigns.added,
-                    modified = gitsigns.changed,
-                    removed = gitsigns.removed,
-                  }
-                end
-              end,
-            },
+            -- 'lsp_progress'
+            -- 'filename'
+            -- "require'lsp-status'.status()",
+            "g:metals_status",
+
+            -- -- stylua: ignore
+            -- {
+            --   function() return require("noice").api.status.command.get() end,
+            --   cond = function() return package.loaded["noice"] and require("noice").api.status.command.has() end,
+            --   color = Util.ui.fg("Statement"),
+            -- },
+            -- -- stylua: ignore
+            -- {
+            --   function() return require("noice").api.status.mode.get() end,
+            --   cond = function() return package.loaded["noice"] and require("noice").api.status.mode.has() end,
+            --   color = Util.ui.fg("Constant"),
+            -- },
+            -- -- stylua: ignore
+            -- {
+            --   function() return "  " .. require("dap").status() end,
+            --   cond = function () return package.loaded["dap"] and require("dap").status() ~= "" end,
+            --   color = Util.ui.fg("Debug"),
+            -- },
+            --   {
+            --     require("lazy.status").updates,
+            --     cond = require("lazy.status").has_updates,
+            --     color = Util.ui.fg("Special"),
+            --   },
+            --   {
+            --     "diff",
+            --     symbols = {
+            --       added = icons.git.added,
+            --       modified = icons.git.modified,
+            --       removed = icons.git.removed,
+            --     },
+            --     source = function()
+            --       local gitsigns = vim.b.gitsigns_status_dict
+            --       if gitsigns then
+            --         return {
+            --           added = gitsigns.added,
+            --           modified = gitsigns.changed,
+            --           removed = gitsigns.removed,
+            --         }
+            --       end
+            --     end,
+            --   },
           },
           lualine_y = {
             { "progress", separator = " ", padding = { left = 1, right = 0 } },
@@ -351,4 +374,5 @@ return {
       })
     end,
   },
+  -- { "folke/noice.nvim", enabled = false },
 }
