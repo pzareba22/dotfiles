@@ -1,0 +1,378 @@
+local map = vim.keymap.set
+local fn = vim.fn
+local Util = require("lazyvim.util")
+
+require("telescope").setup({
+  defaults = {
+    file_ignore_patterns = {
+      ".bloop",
+    },
+  },
+})
+
+return {
+  {
+    "hrsh7th/nvim-cmp",
+    event = "InsertEnter",
+    dependencies = {
+      { "hrsh7th/cmp-nvim-lsp" },
+      { "hrsh7th/cmp-vsnip" },
+      { "hrsh7th/vim-vsnip" },
+    },
+    opts = function()
+      local cmp = require("cmp")
+      local conf = {
+        sources = {
+          { name = "nvim_lsp" },
+          { name = "vsnip" },
+        },
+        snippet = {
+          expand = function(args)
+            -- Comes from vsnip
+            fn["vsnip#anonymous"](args.body)
+          end,
+        },
+        mapping = cmp.mapping.preset.insert({
+          -- None of this made sense to me when first looking into this since there
+          -- is no vim docs, but you can't have select = true here _unless_ you are
+          -- also using the snippet stuff. So keep in mind that if you remove
+          -- snippets you need to remove this select
+          ["<CR>"] = cmp.mapping.confirm({ select = true }),
+          -- I use tabs... some say you should stick to ins-completion but this is just here as an example
+          ["<Tab>"] = function(fallback)
+            if cmp.visible() then
+              cmp.select_next_item()
+            else
+              fallback()
+            end
+          end,
+          ["<S-Tab>"] = function(fallback)
+            if cmp.visible() then
+              cmp.select_prev_item()
+            else
+              fallback()
+            end
+          end,
+        }),
+      }
+      return conf
+    end,
+  },
+  {
+
+    "scalameta/nvim-metals",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      {
+        "mfussenegger/nvim-dap",
+        config = function(self, opts)
+          -- Debug settings if you're using nvim-dap
+          local dap = require("dap")
+
+          dap.configurations.scala = {
+            {
+              type = "scala",
+              request = "launch",
+              name = "RunOrTest",
+              metals = {
+                runType = "runOrTestFile",
+                --args = { "firstArg", "secondArg", "thirdArg" }, -- here just as an example
+              },
+            },
+            {
+              type = "scala",
+              request = "launch",
+              name = "Test Target",
+              metals = {
+                runType = "testTarget",
+              },
+            },
+          }
+        end,
+      },
+    },
+    ft = { "scala", "sbt", "java" },
+    opts = function()
+      local metals_config = require("metals").bare_config()
+
+      -- Example of settings
+      metals_config.settings = {
+        showImplicitArguments = true,
+        showInferredType = true,
+        excludedPackages = { "akka.actor.typed.javadsl", "com.github.swagger.akka.javadsl" },
+      }
+
+      -- *READ THIS*
+      -- I *highly* recommend setting statusBarProvider to true, however if you do,
+      -- you *have* to have a setting to display this in your statusline or else
+      -- you'll not see any messages from metals. There is more info in the help
+      -- docs about this
+      metals_config.init_options.statusBarProvider = "on"
+
+      -- Example if you are using cmp how to make sure the correct capabilities for snippets are set
+      metals_config.capabilities = require("cmp_nvim_lsp").default_capabilities()
+
+      metals_config.on_attach = function(client, bufnr)
+        require("metals").setup_dap()
+
+        -- LSP mappings
+        --map("n", "gD", vim.lsp.buf.definition)
+        map("n", "gi", vim.lsp.buf.implementation)
+        map("n", "K", vim.lsp.buf.hover)
+        map("n", "gr", vim.lsp.buf.references)
+        map("n", "gds", vim.lsp.buf.document_symbol)
+        map("n", "gws", vim.lsp.buf.workspace_symbol)
+        map("n", "<leader>cl", vim.lsp.codelens.run)
+        map("n", "<leader>sh", vim.lsp.buf.signature_help)
+        map("n", "<leader>rn", vim.lsp.buf.rename)
+        map("n", "<leader>f", vim.lsp.buf.format)
+        map("n", "<leader>ca", vim.lsp.buf.code_action)
+
+        map("n", "<leader>ws", function()
+          require("metals").hover_worksheet()
+        end)
+
+        -- all workspace diagnostics
+        map("n", "<leader>aa", vim.diagnostic.setqflist)
+
+        -- all workspace errors
+        map("n", "<leader>ae", function()
+          vim.diagnostic.setqflist({ severity = "E" })
+        end)
+
+        -- all workspace warnings
+        map("n", "<leader>aw", function()
+          vim.diagnostic.setqflist({ severity = "W" })
+        end)
+
+        -- buffer diagnostics only
+        map("n", "<leader>d", vim.diagnostic.setloclist)
+
+        map("n", "[c", function()
+          vim.diagnostic.goto_prev({ wrap = false })
+        end)
+
+        map("n", "]c", function()
+          vim.diagnostic.goto_next({ wrap = false })
+        end)
+
+        -- Example mappings for usage with nvim-dap. If you don't use that, you can
+        -- skip these
+        map("n", "<leader>dc", function()
+          require("dap").continue()
+        end)
+
+        map("n", "<leader>dr", function()
+          require("dap").repl.toggle()
+        end)
+
+        map("n", "<leader>dK", function()
+          require("dap.ui.widgets").hover()
+        end)
+
+        map("n", "<leader>dt", function()
+          require("dap").toggle_breakpoint()
+        end)
+
+        map("n", "<leader>dso", function()
+          require("dap").step_over()
+        end)
+
+        map("n", "<leader>dsi", function()
+          require("dap").step_into()
+        end)
+
+        map("n", "<leader>dl", function()
+          require("dap").run_last()
+        end)
+      end
+
+      return metals_config
+    end,
+    config = function(self, metals_config)
+      local nvim_metals_group = vim.api.nvim_create_augroup("nvim-metals", { clear = true })
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = self.ft,
+        callback = function()
+          require("metals").initialize_or_attach(metals_config)
+        end,
+        group = nvim_metals_group,
+      })
+    end,
+  },
+  --   {
+  --     "stevearc/dressing.nvim",
+  --     enabled = false,
+  --   },
+  -- {
+  --   "rcarriga/nvim-notify",
+  --   enabled = false,
+  -- },
+  {
+    "nvim-lualine/lualine.nvim",
+    -- dependencies = {
+    --   "arkav/lualine-lsp-progress",
+    --   "nvim-lua/lsp-status.nvim",
+    --   {
+    --     "linrongbin16/lsp-progress.nvim",
+    --     config = function()
+    --       require("lsp-progress").setup()
+    --       vim.api.nvim_create_augroup("lualine_augroup", { clear = true })
+    --       vim.api.nvim_create_autocmd("User", {
+    --         group = "lualine_augroup",
+    --         pattern = "LspProgressStatusUpdated",
+    --         callback = require("lualine").refresh,
+    --       })
+    --     end,
+    --   },
+    -- },
+    event = "VeryLazy",
+    init = function()
+      vim.g.lualine_laststatus = vim.o.laststatus
+      if vim.fn.argc(-1) > 0 then
+        -- set an empty statusline till lualine loads
+        vim.o.statusline = " "
+      else
+        -- hide the statusline on the starter page
+        vim.o.laststatus = 0
+      end
+    end,
+    opts = function()
+      -- PERF: we don't need this lualine require madness 🤷
+      local lualine_require = require("lualine_require")
+      lualine_require.require = require
+
+      local icons = require("lazyvim.config").icons
+
+      vim.o.laststatus = vim.g.lualine_laststatus
+
+      return {
+        options = {
+          theme = "auto",
+          globalstatus = true,
+          disabled_filetypes = { statusline = { "dashboard", "alpha", "starter" } },
+        },
+        sections = {
+          lualine_a = { "mode" },
+          lualine_b = { "branch" },
+
+          lualine_c = {
+            -- { "diagnostics", sources = { "nvim_lsp" } }
+            Util.lualine.root_dir(),
+            {
+              "diagnostics",
+              symbols = {
+                error = icons.diagnostics.Error,
+                warn = icons.diagnostics.Warn,
+                info = icons.diagnostics.Info,
+                hint = icons.diagnostics.Hint,
+              },
+            },
+            { "filetype", icon_only = true, separator = "", padding = { left = 1, right = 0 } },
+            { Util.lualine.pretty_path() },
+          },
+          -- lualine_w = {
+          --   {
+          --
+          --     "diagnostics",
+          --
+          --     -- Table of diagnostic sources, available sources are:
+          --     --   'nvim_lsp', 'nvim_diagnostic', 'nvim_workspace_diagnostic', 'coc', 'ale', 'vim_lsp'.
+          --     -- or a function that returns a table as such:
+          --     --   { error=error_cnt, warn=warn_cnt, info=info_cnt, hint=hint_cnt }
+          --     sources = { "nvim_lsp" },
+          --
+          --     -- Displays diagnostics for the defined severity types
+          --     sections = { "error", "warn", "info", "hint" },
+          --
+          --     diagnostics_color = {
+          --       -- Same values as the general color option can be used here.
+          --       error = "DiagnosticError", -- Changes diagnostics' error color.
+          --       warn = "DiagnosticWarn", -- Changes diagnostics' warn color.
+          --       info = "DiagnosticInfo", -- Changes diagnostics' info color.
+          --       hint = "DiagnosticHint", -- Changes diagnostics' hint color.
+          --     },
+          --     symbols = { error = "E", warn = "W", info = "I", hint = "H" },
+          --     colored = true, -- Displays diagnostics status in color if set to true.
+          --     update_in_insert = false, -- Update diagnostics in insert mode.
+          --     always_visible = false, -- Show diagnostics even if there are none.
+          --   },
+          -- },
+          lualine_x = {
+            -- 'lsp_progress'
+            -- 'filename'
+            -- "require'lsp-status'.status()",
+            "g:metals_status",
+
+            -- -- stylua: ignore
+            -- {
+            --   function() return require("noice").api.status.command.get() end,
+            --   cond = function() return package.loaded["noice"] and require("noice").api.status.command.has() end,
+            --   color = Util.ui.fg("Statement"),
+            -- },
+            -- -- stylua: ignore
+            -- {
+            --   function() return require("noice").api.status.mode.get() end,
+            --   cond = function() return package.loaded["noice"] and require("noice").api.status.mode.has() end,
+            --   color = Util.ui.fg("Constant"),
+            -- },
+            -- -- stylua: ignore
+            -- {
+            --   function() return "  " .. require("dap").status() end,
+            --   cond = function () return package.loaded["dap"] and require("dap").status() ~= "" end,
+            --   color = Util.ui.fg("Debug"),
+            -- },
+            --   {
+            --     require("lazy.status").updates,
+            --     cond = require("lazy.status").has_updates,
+            --     color = Util.ui.fg("Special"),
+            --   },
+            --   {
+            --     "diff",
+            --     symbols = {
+            --       added = icons.git.added,
+            --       modified = icons.git.modified,
+            --       removed = icons.git.removed,
+            --     },
+            --     source = function()
+            --       local gitsigns = vim.b.gitsigns_status_dict
+            --       if gitsigns then
+            --         return {
+            --           added = gitsigns.added,
+            --           modified = gitsigns.changed,
+            --           removed = gitsigns.removed,
+            --         }
+            --       end
+            --     end,
+            --   },
+          },
+          lualine_y = {
+            { "progress", separator = " ", padding = { left = 1, right = 0 } },
+            { "location", padding = { left = 0, right = 1 } },
+          },
+          lualine_z = {
+            function()
+              return " " .. os.date("%R")
+            end,
+          },
+        },
+        extensions = { "neo-tree", "lazy" },
+      }
+    end,
+  },
+  { "stevanmilic/neotest-scala" },
+  {
+    "nvim-neotest/neotest",
+    requires = {
+      "stevanmilic/neotest-scala",
+    },
+    config = function()
+      require("neotest").setup({
+        adapters = {
+          require("neotest-scala"),
+        },
+      })
+    end,
+  },
+  -- { "folke/noice.nvim", enabled = false },
+}
