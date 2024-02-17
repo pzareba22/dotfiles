@@ -201,32 +201,8 @@ return {
       })
     end,
   },
-  --   {
-  --     "stevearc/dressing.nvim",
-  --     enabled = false,
-  --   },
-  -- {
-  --   "rcarriga/nvim-notify",
-  --   enabled = false,
-  -- },
   {
     "nvim-lualine/lualine.nvim",
-    -- dependencies = {
-    --   "arkav/lualine-lsp-progress",
-    --   "nvim-lua/lsp-status.nvim",
-    --   {
-    --     "linrongbin16/lsp-progress.nvim",
-    --     config = function()
-    --       require("lsp-progress").setup()
-    --       vim.api.nvim_create_augroup("lualine_augroup", { clear = true })
-    --       vim.api.nvim_create_autocmd("User", {
-    --         group = "lualine_augroup",
-    --         pattern = "LspProgressStatusUpdated",
-    --         callback = require("lualine").refresh,
-    --       })
-    --     end,
-    --   },
-    -- },
     event = "VeryLazy",
     init = function()
       vim.g.lualine_laststatus = vim.o.laststatus
@@ -291,7 +267,7 @@ return {
   },
   {
     "nvim-neotest/neotest",
-    requires = {
+    dependencies = {
       "stevanmilic/neotest-scala",
     },
     config = function()
