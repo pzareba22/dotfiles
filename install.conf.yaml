@@ -13,6 +13,8 @@
     ~/.config/nvim: nvim
     ~/.config/alacritty: alacritty
     ~/.config/tmux: tmux
+    ~/.asdfrc: asdfrc
+    ~/.tool-versions: tool-versions
 
 # - shell:
 #     - [git submodule update --init --recursive, Installing submodules]

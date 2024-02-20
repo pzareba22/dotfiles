@@ -1,0 +1,13 @@
+nodejs lts-hydrogen
+java openjdk-17.0.2
+scala 2.13.10
+sbt 1.8.2
+deno 1.30.0
+rust 1.67.0
+rust-analyzer 2023-01-30
+haskell 9.4-latest
+erlang 26.0
+golang 1.22.0
+golangci-lint 1.56.2
+ghc 9.8.1
+hls 2.6.0.0
