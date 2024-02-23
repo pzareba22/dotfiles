@@ -21,7 +21,7 @@ family = "MesloLGS Nerd Font"
 style = "Italic"
 
 [window]
-opacity = 0.9
+# opacity = 0.9
 # decorations = "None"
 
 # gruvbox_material_medium_dark theme
