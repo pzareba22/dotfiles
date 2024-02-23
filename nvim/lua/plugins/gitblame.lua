@@ -1,3 +1,9 @@
+local map = vim.keymap.set
+
 return {
-  "f-person/git-blame.nvim"
+  "f-person/git-blame.nvim",
+  opts = function ()
+        local git_blame = require("gitblame")
+        map("n", "<leader>gb", git_blame.toggle)
+  end
 }
