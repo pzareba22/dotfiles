@@ -12,3 +12,4 @@ golangci-lint 1.56.2
 ghc 9.8.1
 hls 2.6.0.0
 python 3.12.2
+elixir 1.16.1-otp-26
