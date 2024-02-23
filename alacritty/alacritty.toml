@@ -20,7 +20,8 @@ style = "Bold Italic"
 family = "MesloLGS Nerd Font"
 style = "Italic"
 
-# [window]
+[window]
+opacity = 0.9
 # decorations = "None"
 
 # gruvbox_material_medium_dark theme
@@ -49,4 +50,5 @@ blue    = '#7daea3'
 magenta = '#d3869b'
 cyan    = '#89b482'
 white   = '#d4be98'
+
 
