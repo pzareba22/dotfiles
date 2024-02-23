@@ -117,3 +117,4 @@ export PATH="$HOME/.asdf/bin:$HOME/.asdf/shims:$PATH"
 alias config='/usr/bin/git --git-dir=/Users/pawelzareba/.cfg/ --work-tree=/Users/pawelzareba'
 
 alias k='kubectl'
+alias t='tmux'
