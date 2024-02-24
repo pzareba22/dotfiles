@@ -1,5 +1,5 @@
 nodejs lts-hydrogen
-java openjdk-17
+java openjdk-17.0.2
 scala 2.13.10
 sbt 1.8.2
 deno 1.30.0
