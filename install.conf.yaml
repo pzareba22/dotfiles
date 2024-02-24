@@ -13,6 +13,7 @@
     ~/.config/nvim: nvim
     ~/.config/alacritty: alacritty
     ~/.config/tmux: tmux
+    ~/.config/sketchybar: sketchybar
     ~/.asdfrc: asdfrc
     ~/.tool-versions: tool-versions
 
