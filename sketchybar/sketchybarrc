@@ -38,7 +38,7 @@ sketchybar --default "${default[@]}"
 # https://felixkratz.github.io/SketchyBar/config/components#space----associate-mission-control-spaces-with-an-item
 # to indicate active and available mission control spaces.
 
-SPACE_ICONS=("" "" "" "" "5" "6" "󰈎" "󰝚")
+SPACE_ICONS=("" "" "" "" "5" "" "󰈎" "󰝚")
 for i in "${!SPACE_ICONS[@]}"
 do
   sid="$(($i+1))"
@@ -77,6 +77,10 @@ sketchybar --add item chevron left \
 # volume.sh script is only executed once an actual change in system audio
 # volume is registered. More info about the event system can be found here:
 # https://felixkratz.github.io/SketchyBar/config/events
+media=(
+  script="$PLUGIN_DIR/media.sh"
+  updates=on
+)
 
 sketchybar --add item clock right \
            --set clock update_freq=10 icon=  script="$PLUGIN_DIR/clock.sh" \
@@ -86,14 +90,10 @@ sketchybar --add item clock right \
            --add item battery right \
            --set battery update_freq=120 script="$PLUGIN_DIR/battery.sh" \
            --subscribe battery system_woke power_source_change
-           media=(
-  script="$PLUGIN_DIR/media.sh"
-  updates=on
-)
 
-sketchybar --add item media left \
-           --set media "${media[@]}" \
-           --subscribe media media_change
+           # --add item media right \
+           # --set media "${media[@]}" \
+           # --subscribe media media_change
 
 ##### Force all scripts to run the first time (never do this in a script) #####
 sketchybar --update
