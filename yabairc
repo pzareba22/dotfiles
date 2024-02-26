@@ -1,0 +1,20 @@
+yabai -m signal --add event=dock_did_restart action="sudo yabai --load-sa"
+sudo yabai --load-sa
+
+yabai -m config layout                       floating
+
+yabai -m config top_padding                  10
+yabai -m config bottom_padding               10
+yabai -m config left_padding                 10
+yabai -m config right_padding                10
+yabai -m config window_gap             	     10
+
+# yabai -m rule --add title="Brave – BEST" space=3
+# yabai -m rule --add title="Messenger" space=7
+# yabai -m rule --add title="Todoist" space=5
+yabai -m rule --add app="Shottr" manage=off
+yabai -m rule --add app="Settings" manage=off
+
+# yabai -m config window_border on
+
+
