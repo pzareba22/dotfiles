@@ -14,6 +14,7 @@ yabai -m config window_gap             	     10
 # yabai -m rule --add title="Todoist" space=5
 yabai -m rule --add app="Shottr" manage=off
 yabai -m rule --add app="Settings" manage=off
+yabai -m rule --add app="Finder" manage=off
 
 # yabai -m config window_border on
 
