@@ -15,6 +15,7 @@
     ~/.config/tmux: tmux
     ~/.config/sketchybar: sketchybar
     ~/.config/skhd: skhd
+    ~/.config/doom: doom
     ~/.asdfrc: asdfrc
     ~/.tool-versions: tool-versions
     ~/.yabairc: yabairc
