@@ -137,3 +137,6 @@
 (setq evil-move-beyond-eol t)
 
 (setq org-roam-directory "~/nc/org/roam")
+
+(require 'org-journal)
+(require 'org-habit)

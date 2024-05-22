@@ -196,3 +196,12 @@
 
 (after! projectile
   (projectile-add-known-project "/Users/pawelzareba/Studia/s8/krypto/sargon2"))
+
+
+(add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
+
+
+(after! org-journal
+  (setq org-journal-dir "~/nc/org/Journal")
+  )
+
