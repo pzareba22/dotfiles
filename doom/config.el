@@ -138,5 +138,8 @@
 
 (setq org-roam-directory "~/nc/org/roam")
 
+(after! evil-escape
+  (setq evil-escape-key-sequence "kj"))
+
 (require 'org-journal)
 (require 'org-habit)
