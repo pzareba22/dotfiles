@@ -81,13 +81,16 @@
 ;; set key for agenda
 (global-set-key (kbd "C-c a") 'org-agenda)
 
-;;file to save todo ite s
-(setq org-agenda-files (quote ("~/nc/org/todo.org")))
+;;file to save todo items
+(setq org-agenda-files '(
+                         "~/nc/org/todo.org"
+                         "~/nc/org/work_todo.org"
+                         ))
 
 ;;set priority range from A to C with default A
 (setq org-highest-priority ?A)
 (setq org-lowest-priority ?C)
-(setq org-default-priority ?A)
+(setq org-default-priority ?B)
 
 ;;set colours for priorities
 (setq org-priority-faces '((?A . (:foreground "#F0DFAF" :weight bold))
@@ -103,17 +106,12 @@
 (after! org
         (setq org-capture-templates
                  '(
-                        ("t" "todo" entry (file+headline "~/nc/org/todo.org" "Inbox") "* TODO [#A] %?")
-                        ("b" "BEST todo" entry (file+headline "~/nc/org/todo.org" "BEST inbox") "* TODO [#A] %?")
+                        ("t" "todo" entry (file+headline "~/nc/org/todo.org" "Inbox") "* TODO [#B] %?")
+                        ("b" "BEST todo" entry (file+headline "~/nc/org/todo.org" "BEST inbox") "* TODO [#B] %?")
+                        ("w" "Work todo" entry (file+headline "~/nc/org/work_todo.org" "Inbox") "* TODO [#B] %?")
                  )
         )
 )
-
-;; (after! org
-;;         (setq org-capture-templates
-;;                 '(("t" "todo" entry (file+headline "/Users/pawelzareba/org/todo.org" "Inbox") "* TODO [#A] %?")
-;;                 ("b" "BEST todo" entry (file+headline "/Users/pawelzareba/org/todo.org" "BEST inbox") "* TODO [#A] %?")))
-;;  )
 
 
 ;; disable spelling suggestions
@@ -123,7 +121,7 @@
 (setq display-line-numbers-type 'relative)
 
 ;; theme
-(setq doom-theme 'doom-monokai-pro)
+;; (setq doom-theme 'doom-monokai-pro)
 
 ;; org roam
 (after! org
@@ -136,7 +134,7 @@
 
 (setq evil-move-beyond-eol t)
 
-(setq org-roam-directory "~/nc/org/roam")
+;; (setq org-roam-directory "~/nc/org/roam")
 
 (after! evil-escape
   (setq evil-escape-key-sequence "kj"))
